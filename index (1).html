@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RodriguezLTD — Design Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #0a0a08;
+    --paper: #f4f0e8;
+    --warm: #c8a96e;
+    --rust: #b84c2e;
+    --fog: #d8d4cc;
+    --deep: #1a1a16;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    width: 10px; height: 10px;
+    background: var(--rust);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: multiply;
+  }
+  #cursor.expand { width: 40px; height: 40px; }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 3rem;
+    mix-blend-mode: multiply;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8rem 3rem 5rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.5s forwards;
+  }
+
+  .hero-title span {
+    display: block;
+    color: var(--rust);
+  }
+
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--deep);
+    opacity: 0;
+    margin-top: 2rem;
+    max-width: 360px;
+    line-height: 1.6;
+    animation: fadeUp 1s ease 0.7s forwards;
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #c8a96e22, #b84c2e33, #0a0a0811);
+    z-index: 1;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--fog) 1px, transparent 1px),
+      linear-gradient(90deg, var(--fog) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.5;
+    animation: gridFade 2s ease 0.2s forwards;
+    opacity: 0;
+  }
+
+  .hero-shape {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px;
+    height: 440px;
+    background: var(--warm);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+    z-index: 2;
+    opacity: 0;
+    animation: shapeReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+  }
+
+  .hero-R {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14rem;
+    color: var(--paper);
+    z-index: 3;
+    line-height: 1;
+    opacity: 0;
+    animation: fadeIn 1s ease 1s forwards;
+  }
+
+  .hero-year {
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    opacity: 0.4;
+    z-index: 4;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.2s forwards;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--rust);
+    transform-origin: left;
+    animation: lineGrow 1s ease 1.4s forwards;
+    transform: scaleX(0);
+  }
+
+  /* MARQUEE */
+  .marquee-strip {
+    background: var(--ink);
+    padding: 1rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee-inner {
+    display: inline-block;
+    animation: marquee 18s linear infinite;
+  }
+
+  .marquee-inner span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--warm);
+    padding: 0 2rem;
+  }
+
+  .marquee-inner span.dot {
+    color: var(--rust);
+    padding: 0;
+  }
+
+  /* ABOUT */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    height: fit-content;
+    align-self: start;
+    margin-top: 0.5rem;
+  }
+
+  .about-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+
+  .about-content h2 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .about-content p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    font-weight: 300;
+    color: #3a3a32;
+    margin-bottom: 1.5rem;
+    max-width: 580px;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--fog);
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--rust);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.5;
+    margin-top: 0.5rem;
+  }
+
+  /* SERVICES */
+  .services {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8rem 3rem;
+  }
+
+  .services-header {
+    max-width: 1200px;
+    margin: 0 auto 5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .services-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+  }
+
+  .services-header h2 span { color: var(--warm); }
+
+  .services-header p {
+    font-style: italic;
+    font-size: 1rem;
+    font-weight: 300;
+    max-width: 280px;
+    line-height: 1.6;
+    opacity: 0.6;
+    padding-bottom: 0.5rem;
+  }
+
+  .services-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid #ffffff18;
+  }
+
+  .service-card {
+    padding: 3rem 2.5rem;
+    border-right: 1px solid #ffffff18;
+    border-bottom: 1px solid #ffffff18;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+
+  .service-card:hover { background: #ffffff08; }
+
+  .service-card:nth-child(3n) { border-right: none; }
+
+  .service-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--warm);
+    opacity: 0.6;
+    margin-bottom: 2rem;
+  }
+
+  .service-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .service-card p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    opacity: 0.55;
+    font-weight: 300;
+  }
+
+  .service-arrow {
+    position: absolute;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ffffff20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .service-card:hover .service-arrow { opacity: 1; transform: translateY(0); }
+
+  /* WORK */
+  .work {
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .work-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 5rem;
+  }
+
+  .work-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 5rem);
+    letter-spacing: 0.02em;
+    line-height: 0.9;
+  }
+
+  .work-header-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--fog), transparent);
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 1.5rem;
+  }
+
+  .work-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--fog);
+    aspect-ratio: 4/3;
+    cursor: none;
+  }
+
+  .work-card:first-child {
+    grid-column: 1 / 3;
+    aspect-ratio: 16/7;
+  }
+
+  .work-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .work-card:hover .work-bg { transform: scale(1.04); }
+
+  .work-card:nth-child(1) .work-bg {
+    background: linear-gradient(135deg, #1a1510 0%, #c8a96e 50%, #b84c2e 100%);
+  }
+  .work-card:nth-child(2) .work-bg {
+    background: linear-gradient(135deg, #0a0a08 0%, #2d2d26 100%);
+  }
+  .work-card:nth-child(3) .work-bg {
+    background: linear-gradient(135deg, #b84c2e22, #c8a96e44);
+  }
+
+  .work-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.15;
+  }
+
+  .work-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2rem;
+    background: linear-gradient(transparent, rgba(10,10,8,0.85));
+    color: var(--paper);
+    transform: translateY(10px);
+    opacity: 0;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+
+  .work-card:hover .work-info { opacity: 1; transform: translateY(0); }
+
+  .work-info-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warm);
+    margin-bottom: 0.5rem;
+  }
+
+  .work-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
+
+  .work-label {
+    position: absolute;
+    top: 2rem; left: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.8rem;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* TESTIMONIAL */
+  .testimonial {
+    background: var(--rust);
+    padding: 7rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .testimonial::before {
+    content: '\201C';
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20rem;
+    color: rgba(255,255,255,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .testimonial blockquote {
+    max-width: 780px;
+    margin: 0 auto;
+    font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--paper);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2.5rem;
+  }
+
+  .testimonial cite {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(244,240,232,0.6);
+    font-style: normal;
+    display: block;
+  }
+
+  /* CTA */
+  .cta {
+    padding: 10rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .cta h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 6vw, 6rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+  }
+
+  .cta h2 span { color: var(--rust); display: block; }
+
+  .cta-right p {
+    font-size: 1.15rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: #3a3a32;
+    margin-bottom: 2.5rem;
+    font-style: italic;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1.1rem 2.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.3s, gap 0.3s;
+  }
+
+  .btn-primary:hover { background: var(--rust); gap: 1.5rem; }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    padding: 1.1rem 2.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    margin-left: 1rem;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+  /* FOOTER */
+  footer {
+    background: var(--deep);
+    color: var(--paper);
+    padding: 5rem 3rem 3rem;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 4rem;
+    padding-bottom: 4rem;
+    border-bottom: 1px solid #ffffff12;
+  }
+
+  .footer-brand h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+
+  .footer-brand p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    opacity: 0.45;
+    font-weight: 300;
+    max-width: 280px;
+  }
+
+  .footer-col h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm);
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 0.75rem; }
+  .footer-col ul li a {
+    font-size: 0.88rem;
+    color: var(--paper);
+    opacity: 0.45;
+    text-decoration: none;
+    transition: opacity 0.3s;
+    font-weight: 300;
+  }
+  .footer-col ul li a:hover { opacity: 1; }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.9; }
+  }
+
+  @keyframes shapeReveal {
+    from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  @keyframes gridFade {
+    from { opacity: 0; }
+    to { opacity: 0.5; }
+  }
+
+  @keyframes lineGrow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .about { grid-template-columns: 1fr; }
+    .section-label { writing-mode: horizontal-tb; transform: none; }
+    .services-grid { grid-template-columns: 1fr; }
+    .service-card:nth-child(3n) { border-right: 1px solid #ffffff18; }
+    .work-grid { grid-template-columns: 1fr; }
+    .work-card:first-child { grid-column: 1; aspect-ratio: 4/3; }
+    .cta { grid-template-columns: 1fr; gap: 3rem; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .services-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Rodriguez<span style="color:var(--rust)">LTD</span></a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Design Studio · Est. 2015</div>
+    <h1 class="hero-title">
+      Rodriguez<span>LTD</span>
+    </h1>
+    <p class="hero-sub">Where intention meets execution. We craft identities that endure.</p>
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      Scroll to explore
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-R">R</div>
+    <div class="hero-year">© MMXXV</div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Brand Identity</span><span class="dot"> · </span>
+    <span>Visual Systems</span><span class="dot"> · </span>
+    <span>Motion Design</span><span class="dot"> · </span>
+    <span>Art Direction</span><span class="dot"> · </span>
+    <span>Editorial Design</span><span class="dot"> · </span>
+    <span>Spatial Design</span><span class="dot"> · </span>
+    <span>Brand Identity</span><span class="dot"> · </span>
+    <span>Visual Systems</span><span class="dot"> · </span>
+    <span>Motion Design</span><span class="dot"> · </span>
+    <span>Art Direction</span><span class="dot"> · </span>
+    <span>Editorial Design</span><span class="dot"> · </span>
+    <span>Spatial Design</span><span class="dot"> · </span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-label">About</div>
+  <div class="about-content reveal">
+    <h2>Design as a <em>language.</em><br>Not decoration.</h2>
+    <p>RodriguezLTD is an independent design studio operating at the intersection of strategy and craft. We work with brands that demand more than the ordinary — those who understand that design is the clearest expression of their values.</p>
+    <p>Founded on the belief that every mark, every margin, every moment of interaction is an opportunity to communicate something true.</p>
+    <div class="about-stats">
+      <div>
+        <div class="stat-num">120+</div>
+        <div class="stat-label">Projects Completed</div>
+      </div>
+      <div>
+        <div class="stat-num">40+</div>
+        <div class="stat-label">Global Clients</div>
+      </div>
+      <div>
+        <div class="stat-num">10</div>
+        <div class="stat-label">Years of Practice</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <h2>What We<br><span>Create</span></h2>
+    <p>Each engagement is built from first principles — no templates, no shortcuts.</p>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <h3>Brand Identity</h3>
+      <p>Comprehensive visual identities that communicate the full depth of who you are — from mark to motion, system to sentiment.</p>
+      <div class="service-arrow">→</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <h3>Art Direction</h3>
+      <p>Strategic creative direction for campaigns, editorial, and content — shaping the visual narrative across every touchpoint.</p>
+      <div class="service-arrow">→</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <h3>Digital Experience</h3>
+      <p>Websites and digital products designed with the same rigor as print — where interaction becomes a form of craft.</p>
+      <div class="service-arrow">→</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <h3>Motion & Film</h3>
+      <p>Title sequences, brand films, and motion systems that bring static identities into time and space.</p>
+      <div class="service-arrow">→</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">05</div>
+      <h3>Print & Editorial</h3>
+      <p>Books, magazines, packaging, and ephemera conceived as objects to be held — not just seen.</p>
+      <div class="service-arrow">→</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">06</div>
+      <h3>Spatial Design</h3>
+      <p>Environmental graphics, wayfinding, and experiential design for the spaces where your brand lives in three dimensions.</p>
+      <div class="service-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <div class="work-header reveal">
+    <h2>Selected<br>Work</h2>
+    <div class="work-header-line"></div>
+  </div>
+  <div class="work-grid reveal">
+    <div class="work-card">
+      <div class="work-bg"></div>
+      <svg class="work-pattern" viewBox="0 0 800 350" preserveAspectRatio="none">
+        <defs>
+          <pattern id="p1" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+            <circle cx="30" cy="30" r="1" fill="white"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#p1)"/>
+        <text x="400" y="200" font-family="Georgia" font-size="180" fill="white" opacity="0.08" text-anchor="middle" dominant-baseline="middle">FORM</text>
+      </svg>
+      <div class="work-label">Featured</div>
+      <div class="work-info">
+        <div class="work-info-tag">Brand Identity · 2024</div>
+        <h3>Meridian Collective</h3>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-bg" style="background: linear-gradient(135deg, #0a0a08 0%, #2d2d26 100%);"></div>
+      <svg class="work-pattern" viewBox="0 0 400 300" preserveAspectRatio="none">
+        <line x1="0" y1="0" x2="400" y2="300" stroke="white" stroke-width="1"/>
+        <line x1="400" y1="0" x2="0" y2="300" stroke="white" stroke-width="1"/>
+        <circle cx="200" cy="150" r="80" fill="none" stroke="#c8a96e" stroke-width="1"/>
+        <circle cx="200" cy="150" r="120" fill="none" stroke="#c8a96e" stroke-width="0.5" opacity="0.4"/>
+      </svg>
+      <div class="work-info">
+        <div class="work-info-tag">Digital · 2024</div>
+        <h3>Aurum Studio</h3>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-bg" style="background: linear-gradient(135deg, #e8e0d0 0%, #d4c9b4 100%);"></div>
+      <svg class="work-pattern" viewBox="0 0 400 300" preserveAspectRatio="none">
+        <rect x="80" y="60" width="240" height="180" fill="none" stroke="#0a0a08" stroke-width="1" opacity="0.3"/>
+        <rect x="100" y="80" width="200" height="140" fill="none" stroke="#b84c2e" stroke-width="0.5" opacity="0.4"/>
+        <text x="200" y="165" font-family="Georgia" font-size="72" fill="#0a0a08" opacity="0.12" text-anchor="middle" dominant-baseline="middle">EST</text>
+      </svg>
+      <div class="work-info" style="color: var(--ink); background: linear-gradient(transparent, rgba(232,224,208,0.95));">
+        <div class="work-info-tag" style="color: var(--rust);">Editorial · 2023</div>
+        <h3 style="color: var(--ink);">Volta Publishing</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="testimonial">
+  <blockquote>
+    "RodriguezLTD didn't just design our brand — they helped us understand what we actually believe. The work is precise, patient, and unmistakably intentional."
+  </blockquote>
+  <cite>— Isabela Morrow, Creative Director, Meridian Collective</cite>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="contact">
+  <div class="reveal">
+    <h2>Let's Make<br><span>Something</span>Real</h2>
+  </div>
+  <div class="cta-right reveal">
+    <p>We take on a small number of projects each year, working closely with each client to ensure the work is exactly what it should be.</p>
+    <div>
+      <a href="mailto:vosshusstoss@gmail.com" class="btn-primary">Begin a Project →</a>
+      <a href="#work" class="btn-outline">View Work</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <h3>Rodriguez<span style="color:var(--warm)">LTD</span></h3>
+      <p>An independent design studio committed to the discipline of making things that endure.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Work</a></li>
+        <li><a href="#">Process</a></li>
+        <li><a href="#">Journal</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#">Brand Identity</a></li>
+        <li><a href="#">Art Direction</a></li>
+        <li><a href="#">Digital</a></li>
+        <li><a href="#">Print</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:vosshusstoss@gmail.com">vosshusstoss@gmail.com</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">LinkedIn</a></li>
+        <li><a href="#">Behance</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 RodriguezLTD. All rights reserved.</span>
+    <span>Houston, TX · Remote Worldwide</span>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  document.querySelectorAll('a, button, .work-card, .service-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Parallax on hero shape
+  document.addEventListener('mousemove', e => {
+    const shape = document.querySelector('.hero-shape');
+    const R = document.querySelector('.hero-R');
+    if (!shape) return;
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    shape.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    R.style.transform = `translate(calc(-50% + ${x * 0.5}px), calc(-50% + ${y * 0.5}px))`;
+  });
+</script>
+</body>
+</html>
